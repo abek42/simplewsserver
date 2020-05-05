@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+	<script src="ws.js"></script>
+    <script>
+		//first two calls
+		setDOMUpdateListener();
+		setWSEventListener();
+		initWS();
+		
+        function setDebugDiv(){
+            //$("reload").html(JSON.stringify(Date()).split("+")[0]);
+            document.getElementById("reload").innerHTML = JSON.stringify(Date()).split("+")[0];
+        }
+		
+		function setDOMUpdateListener(){//this is meant to encapsulate DOM changes in response to non-DOM events
+			document.addEventListener("DOMUpdate", function(e) {
+				processDOMUpdate(e.detail);//this function should be updated to work on customized changes
+			});
+		}
+		
+		function processDOMUpdate(eventDetails){	
+			//normally, we assume that there is a single span with the name to which the update lands in
+			var hnd = document.getElementById(eventDetails.name);
+			console.log(eventDetails,hnd);
+			if(typeof(hnd)==="undefined"||hnd==null){//doesn't exist
+				hnd = document.createElement('span'); 				//create a span
+				hnd.id = eventDetails.name;							//set it's id for future use
+				document.getElementById("debug").appendChild(hnd); 	//add the new span to the debug-div
+				console.log(eventDetails,hnd);
+			}
+			hnd.innerHTML = eventDetails.details;					//add the actual message
+		}
+		
+		function initWS(){
+			//define your client type here
+			var clientInfo = {"action":ACTION_CONNECT,"type":CLIENT_IS_BROADCAST_LISTENER,"peer":null};
+			notifyWS(clientInfo);
+		}
+		
+		function notifyData(data){
+			var event = new CustomEvent("WSEvent",{
+				detail: data
+			});
+			document.dispatchEvent(event);
+		}
+    </script>
+</head>
+<body onload="setDebugDiv();">
+<div id="debug">
+	<input type="button" onclick="location.reload();" value="Reload"/>
+	<span id="reload">ERROR</span>
+
+	<!--input type="button" onclick="doNext();" value="Next" id="next"/-->
+</div>
+</body>
+</html>
