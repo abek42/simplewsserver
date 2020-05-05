@@ -35,6 +35,9 @@
 					break;
 				case WSEVENT:
 					hnd.innerHTML = eventDetails.details.evt;
+				default:
+					hnd.innerHTML = eventDetails.details;
+					console.log("TBD: ",eventDetails.name, eventDetails);
 			}
 			
 			
