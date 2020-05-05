@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
-	<script src="ws.js"></script>
+	<script src="wsBasic.js"></script>
     <script>
 		//first two calls
 		setDOMUpdateListener();
-		setWSEventListener();
-		initWS();
 		
         function setDebugDiv(){
             //$("reload").html(JSON.stringify(Date()).split("+")[0]);
@@ -31,29 +29,32 @@
 				document.getElementById("debug").appendChild(hnd); 	//add the new span to the debug-div
 				console.log(eventDetails,hnd);
 			}
-			hnd.innerHTML = eventDetails.details;					//add the actual message
+			switch(eventDetails.name){
+				case WSSTATUS:
+					hnd.innerHTML = eventDetails.details.stat;					//add the actual message
+					break;
+				case WSEVENT:
+					hnd.innerHTML = eventDetails.details.evt;
+			}
+			
+			
+			
 		}
 		
-		function initWS(){
-			//define your client type here
-			var clientInfo = {"action":ACTION_CONNECT,"type":CLIENT_IS_BROADCAST_LISTENER,"peer":null};
-			notifyWS(clientInfo);
-		}
 		
-		function notifyData(data){
-			var event = new CustomEvent("WSEvent",{
-				detail: data
-			});
-			document.dispatchEvent(event);
-		}
     </script>
 </head>
 <body onload="setDebugDiv();">
 <div id="debug">
 	<input type="button" onclick="location.reload();" value="Reload"/>
-	<span id="reload">ERROR</span>
-
-	<!--input type="button" onclick="doNext();" value="Next" id="next"/-->
+	<span id="reload">ERROR</span><br>
+	Status: <span id="wsStatus"></span><br>
+	Event: <span id="wsEvent"></span>
+	<input type="button" onclick="wsSend('test')" value="Send" id="next">
 </div>
+<script>
+	console.log("wsinit");
+			websocketInit({});
+</script>
 </body>
 </html>
